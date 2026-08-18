@@ -1,0 +1,88 @@
+{
+    "weather": "DESPEJADO",
+    "parking_slots": {
+        "corta": {
+            "capacity": 100,
+            "occupied": 95
+        },
+        "larga": {
+            "capacity": 250,
+            "occupied": 111
+        },
+        "valet": {
+            "capacity": 50,
+            "occupied": 10
+        }
+    },
+    "active_flights": [
+        {
+            "id": "AA-908",
+            "airline": "American Airlines",
+            "origin": "Miami",
+            "status": "A TIEMPO",
+            "eta": "16:20"
+        },
+        {
+            "id": "IB-6844",
+            "airline": "Iberia",
+            "origin": "Madrid",
+            "status": "A TIEMPO",
+            "eta": "16:30"
+        },
+        {
+            "id": "LA-2415",
+            "airline": "LATAM",
+            "origin": "Santiago de Chile",
+            "status": "DEMORADO",
+            "eta": "17:00"
+        }
+    ],
+    "current_tariffs": {
+        "corta": 3250,
+        "larga": 1550,
+        "valet": 3600
+    },
+    "simulated_cars": [
+        {
+            "plate": "AE-123-BC",
+            "sector": "corta",
+            "flight_id": "AR-1234",
+            "owner_name": "Juan Pérez",
+            "owner_phone": "+54 9 11 5555-1234",
+            "entry_time": "12:00",
+            "scheduled_exit": "00:30",
+            "status": "EXTENDIDO",
+            "notified": true
+        },
+        {
+            "plate": "AF-987-XY",
+            "sector": "larga",
+            "flight_id": "WJ-3420",
+            "owner_name": "Valeria Gómez",
+            "owner_phone": "+54 9 11 4444-9876",
+            "entry_time": "10:00",
+            "scheduled_exit": "16:45",
+            "status": "ESTACIONADO",
+            "notified": false
+        },
+        {
+            "plate": "AD-456-ZZ",
+            "sector": "valet",
+            "flight_id": "AA-908",
+            "owner_name": "Carlos Rodríguez",
+            "owner_phone": "+54 9 11 3333-4567",
+            "entry_time": "08:00",
+            "scheduled_exit": "17:30",
+            "status": "ESTACIONADO",
+            "notified": false
+        }
+    ],
+    "temp_discounts": [
+        {
+            "plate": "ABC-123",
+            "sector": "larga",
+            "price": 700
+        }
+    ],
+    "led_sign": "Sector Corta COMPLETO - Acompañantes desviar a Larga Estadía (30% OFF)"
+}

@@ -1,0 +1,31 @@
+{
+    "airport": {
+        "name": "Aeroparque Jorge Newbery / Ezeiza",
+        "sectors": {
+            "corta": {
+                "description": "Estacionamiento multinivel cubierto frente a terminales",
+                "walk_time_mins": 3,
+                "min_price": 1000,
+                "max_price": 4000
+            },
+            "larga": {
+                "description": "Estacionamiento descubierto económico alejado",
+                "walk_time_mins": 10,
+                "min_price": 600,
+                "max_price": 2500
+            },
+            "valet": {
+                "description": "Servicio premium con recepción en puerta de embarque",
+                "walk_time_mins": 1,
+                "min_price": 2000,
+                "max_price": 6000
+            }
+        }
+    },
+    "pricing_rules": {
+        "base_increase_on_rain": 0.1,
+        "base_increase_on_fog": 0.25,
+        "occupancy_threshold_high": 0.85,
+        "delay_grace_minutes": 30
+    }
+}

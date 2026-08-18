@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AeroPark AI - Panel de Control Agéntico</title>
+    <!-- Google Fonts: Outfit -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="app-container">
+        
+        <!-- Header -->
+        <header class="dashboard-header">
+            <div class="logo-container">
+                <div class="logo-pulse"></div>
+                <h1>AeroPark <span>AI</span></h1>
+            </div>
+            <p class="subtitle">Orquestación Agéntica Cíclica y Memoria Persistente (AEP / EZE)</p>
+            <div class="system-controls">
+                <span id="user-profile-display" class="user-profile" style="display:none; cursor: pointer;" title="Hacé clic para ver tu perfil">
+                    👤 Hola, <strong id="username-span">Invitado</strong>
+                </span>
+                <button id="btn-open-booking" class="btn btn-success" style="display: none;">Nueva Reserva</button>
+                <button id="btn-logout" class="btn" style="display:none;">Cerrar Sesión</button>
+                <button id="btn-reset" class="btn btn-danger">Reiniciar Datos</button>
+            </div>
+        </header>
+
+        <!-- Cartelera LED Dinámica de Accesos -->
+        <div class="led-marquee-container glass">
+            <div class="led-indicator-light"></div>
+            <div class="led-marquee-text" id="led-sign-display">BIENVENIDOS A AEROPARK AI - SECTORES DISPONIBLES</div>
+        </div>
+
+        <!-- Banner de Acción Principal para Reservas (Fácil Acceso) -->
+        <div class="hero-booking-banner glass">
+            <div class="hero-booking-info">
+                <h3>🚗 ¿Viajás pronto desde Aeroparque o Ezeiza?</h3>
+                <p>Asegurá tu cochera con asistencia agéntica en tiempo real, monitoreo de vuelos y protección anti-granizo.</p>
+            </div>
+            <button id="btn-hero-booking" class="btn btn-success btn-hero">➕ Nueva Reserva de Cochera</button>
+        </div>
+
+        <!-- Main Grid Layout -->
+        <main class="dashboard-grid">
+            
+            <!-- Columna 1: Flight & Weather Agent -->
+            <section class="panel glass">
+                <div class="panel-header">
+                    <div class="icon">✈️</div>
+                    <h2>Flight Agent <span>(Vuelos y Clima)</span></h2>
+                </div>
+                
+                <div class="panel-body">
+                    <!-- Simulaciones de Cátedra -->
+                    <div class="card academic-sim-card">
+                        <h3>Simulaciones Académicas OODA</h3>
+                        <div class="academic-sim-buttons" style="flex-wrap: wrap; gap: 8px;">
+                            <button id="btn-sim-a" class="btn btn-primary" style="flex: 1 1 45%;">Escenario A: Niebla AEP</button>
+                            <button id="btn-sim-b" class="btn btn-primary" style="flex: 1 1 45%;">Escenario B: Hora Pico EZE</button>
+                            <button id="btn-sim-c" class="btn btn-primary" style="flex: 1 1 95%;">Escenario C: Granizo en Vivo</button>
+                        </div>
+                    </div>
+
+                    <!-- Clima -->
+                    <div class="card weather-card">
+                        <h3>Simulador de Clima</h3>
+                        <div class="weather-selector">
+                            <button class="btn btn-weather" data-weather="DESPEJADO">☀️ Despejado</button>
+                            <button class="btn btn-weather" data-weather="LLUVIA">🌧️ Lluvia (+10%)</button>
+                            <button class="btn btn-weather" data-weather="NIEBLA">🌫️ Niebla (+25%)</button>
+                        </div>
+                        <div class="current-badge-container">
+                            Clima Actual: <span id="current-weather-badge" class="badge">DESPEJADO</span>
+                        </div>
+                    </div>
+
+                    <!-- Vuelos -->
+                    <div class="card flights-card">
+                        <h3>Vuelos Activos y Demoras</h3>
+                        <div class="flights-list" id="flights-list">
+                            <!-- Inyectado dinámicamente -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Columna 2: Space & Pricing Agent -->
+            <section class="panel glass">
+                <div class="panel-header">
+                    <div class="icon">🚗</div>
+                    <h2>Space & Pricing Agents <span>(Plazas y Tarifas)</span></h2>
+                </div>
+                
+                <div class="panel-body">
+                    <!-- Tarifas Dinámicas -->
+                    <div class="card tariffs-card">
+                        <h3>Tarifas Dinámicas en Tiempo Real</h3>
+                        <div class="tariffs-grid" id="tariffs-grid">
+                            <!-- Inyectado dinámicamente -->
+                        </div>
+                    </div>
+
+                    <!-- Estado del Estacionamiento -->
+                    <div class="card slots-card">
+                        <h3>Ocupación y Sensores</h3>
+                        <div class="slots-container" id="slots-container">
+                            <!-- Inyectado dinámicamente -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Columna 3: UX Agent (WhatsApp Simulator) -->
+            <section class="panel glass">
+                <div class="panel-header">
+                    <div class="icon">💬</div>
+                    <h2>UX Agent <span>(WhatsApp Pasajeros)</span></h2>
+                </div>
+                
+                <div class="panel-body mobile-wrapper">
+                    <!-- Selector de Pasajero -->
+                    <div class="user-selector">
+                        <label for="select-user">Interactuar con Pasajero:</label>
+                        <select id="select-user" class="form-select">
+                            <!-- Inyectado dinámicamente -->
+                        </select>
+                    </div>
+
+                    <!-- Teléfono Móvil Simulado -->
+                    <div class="smartphone-mockup">
+                        <div class="smartphone-screen">
+                            <div class="chat-header">
+                                <div class="avatar">🤖</div>
+                                <div class="chat-info">
+                                    <span class="chat-name">AeroPark AI Copilot</span>
+                                    <span class="chat-status">En línea</span>
+                                </div>
+                            </div>
+                            <div class="chat-messages" id="chat-messages">
+                                <!-- Mensajes del chat inyectados dinámicamente -->
+                            </div>
+                            <div class="chat-quick-actions">
+                                <button class="btn btn-quick" data-reply="Aceptar">✅ Aceptar Extensión</button>
+                                <button class="btn btn-quick" data-reply="Rechazar">❌ Rechazar Oferta</button>
+                            </div>
+                            <div class="chat-input-area">
+                                <input type="text" id="chat-input" placeholder="Escribe tu respuesta..." />
+                                <button id="btn-send-chat" class="btn btn-primary">Enviar</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+
+        <!-- Fila Inferior: Visor de Memoria Persistente y Perfil -->
+        <footer class="memory-viewer glass">
+            <div class="memory-header">
+                <div class="icon">🧠</div>
+                <h2>Memoria Persistente & Perfil de Usuario</h2>
+                <div class="memory-tabs">
+                    <button class="tab-btn active" data-tab="profile">👤 Perfil de Usuario</button>
+                    <button class="tab-btn" data-tab="working">Memoria de Trabajo (JSON Vivo)</button>
+                    <button class="tab-btn" data-tab="episodic">Memoria Episódica (Historial SQLite)</button>
+                    <button class="tab-btn" data-tab="semantic">Memoria Semántica (Grafo & Reglas)</button>
+                </div>
+            </div>
+
+            <div class="tab-content active" id="tab-profile">
+                <div class="user-profile-tab-card" id="user-profile-tab-card">
+                    <!-- Inyectado dinámicamente por JS -->
+                </div>
+            </div>
+
+            <div class="tab-content" id="tab-working">
+                <pre><code id="json-working-memory"><!-- JSON Vivo --></code></pre>
+            </div>
+            
+            <div class="tab-content" id="tab-episodic">
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Fecha/Hora</th>
+                                <th>Tipo de Evento</th>
+                                <th>Descripción de la Decisión / Incidente</th>
+                            </tr>
+                        </thead>
+                        <tbody id="table-episodic-body">
+                            <!-- Logs históricos de SQLite -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="tab-content" id="tab-semantic">
+                <pre><code id="json-semantic-memory"><!-- Reglas del negocio --></code></pre>
+            </div>
+        </footer>
+
+    </div>
+
+    <!-- Modal de Reserva Interactiva (Slot Selector) -->
+    <div id="booking-modal" class="modal-overlay" style="display: none;">
+        <div class="modal-card glass">
+            <div class="modal-header">
+                <h2>Nueva Reserva Pre-Viaje</h2>
+                <button id="btn-close-booking" class="btn-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="form-booking" class="booking-form">
+                    <div class="booking-fields-grid">
+                        <div class="form-group">
+                            <label for="book-name">Nombre y Apellido</label>
+                            <input type="text" id="book-name" class="form-input" placeholder="Juan Pérez" required />
+                        </div>
+                        <div class="form-group">
+                            <label for="book-phone">Teléfono (WhatsApp)</label>
+                            <input type="text" id="book-phone" class="form-input" placeholder="+54 9 11 ..." required />
+                        </div>
+                        <div class="form-group">
+                            <label for="book-plate">Patente</label>
+                            <input type="text" id="book-plate" class="form-input" placeholder="AA-123-BB" required />
+                        </div>
+                        <div class="form-group">
+                            <label for="book-flight">Nro. Vuelo de regreso</label>
+                            <input type="text" id="book-flight" class="form-input" placeholder="AR-1302" required />
+                        </div>
+                        <div class="form-group">
+                            <label for="book-entry">Hora Ingreso</label>
+                            <input type="text" id="book-entry" class="form-input" placeholder="12:00" required />
+                        </div>
+                        <div class="form-group">
+                            <label for="book-exit">Hora Egreso (Estimada)</label>
+                            <input type="text" id="book-exit" class="form-input" placeholder="18:30" required />
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="book-sector">Sector de Estacionamiento</label>
+                        <select id="book-sector" class="form-select" required>
+                            <option value="corta">Corta Estadía (Techado) - Precio Base: $1500/h</option>
+                            <option value="larga">Larga Estadía (Descubierto) - Precio Base: $1000/h</option>
+                            <option value="valet">Valet Parking (Techado) - Precio Base: $2500/h</option>
+                        </select>
+                    </div>
+
+                    <div class="slot-selector-container">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                            <label style="margin:0;">Seleccioná tu Cochera Individual:</label>
+                            <button type="button" id="btn-auto-select-slot" class="btn btn-primary btn-sm">⚡ Auto-seleccionar Libre</button>
+                        </div>
+                        <div class="slot-legend">
+                            <span><span class="legend-box available-box"></span> Libre</span>
+                            <span><span class="legend-box occupied-box"></span> Ocupado</span>
+                            <span><span class="legend-box covered-box"></span> Techado</span>
+                            <span><span class="legend-box uncovered-box"></span> Descubierto</span>
+                        </div>
+                        <div class="slots-grid-2d" id="slots-grid-2d">
+                            <!-- Inyectado por JS -->
+                        </div>
+                        <div class="slot-selected-badge" id="slot-selected-info">
+                            Ninguna cochera seleccionada
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-success btn-block" id="btn-confirm-booking">Confirmar Reserva</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Perfil de Usuario -->
+    <div id="profile-modal" class="modal-overlay" style="display: none;">
+        <div class="modal-card glass">
+            <div class="modal-header">
+                <h2>👤 Mi Perfil de Usuario</h2>
+                <button id="btn-close-profile" class="btn-close">&times;</button>
+            </div>
+            <div class="modal-body" id="modal-profile-body">
+                <!-- Inyectado por JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Sugerencia de Upgrade por Clima/Granizo -->
+    <div id="upgrade-modal" class="modal-overlay" style="display: none;">
+        <div class="modal-card glass upgrade-card">
+            <div class="modal-header">
+                <h2>⚠️ Riesgo Meteorológico de Granizo</h2>
+                <button id="btn-close-upgrade" class="btn-close">&times;</button>
+            </div>
+            <div class="modal-body text-center">
+                <div class="alert-icon">⛈️</div>
+                <p class="alert-text">
+                    El sistema detectó una alerta preventiva de granizo activa en el SMN.
+                    Has elegido un sector <strong>Descubierto (Larga Estadía)</strong>.
+                </p>
+                <div class="upgrade-offer-box">
+                    <p>¡Sugerimos pasarte al <strong>Sector Techado (Corta Estadía)</strong> para resguardar tu auto!</p>
+                    <span class="upgrade-price-diff">Recargo adicional sugerido: +$500/h</span>
+                </div>
+                <div class="upgrade-buttons">
+                    <button id="btn-accept-upgrade" class="btn btn-success">Aceptar Upgrade Techado</button>
+                    <button id="btn-reject-upgrade" class="btn btn-danger">Mantener Descubierto</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Overlay de Autenticación -->
+    <div id="auth-overlay" class="auth-overlay">
+        <div class="auth-card glass">
+            <div class="auth-header">
+                <h2>AeroPark <span>AI</span></h2>
+                <p id="auth-subtitle">Iniciar sesión para acceder al panel</p>
+            </div>
+            
+            <!-- Formulario de Login -->
+            <form id="form-login" class="auth-form">
+                <div class="form-group">
+                    <label for="login-username">Usuario</label>
+                    <input type="text" id="login-username" class="form-input" placeholder="Ingresa tu usuario" required />
+                </div>
+                <div class="form-group">
+                    <label for="login-password">Contraseña</label>
+                    <input type="password" id="login-password" class="form-input" placeholder="Ingresa tu contraseña" required />
+                </div>
+                <div id="login-error-msg" class="auth-error-msg"></div>
+                <div id="login-success-msg" class="auth-success-msg"></div>
+                <button type="submit" class="btn btn-primary btn-block">Iniciar Sesión</button>
+                <div class="auth-links-container">
+                    <p class="auth-toggle-text">¿No tienes cuenta? <a href="#" id="link-show-register">Regístrate acá</a></p>
+                    <p class="auth-toggle-text"><a href="#" id="link-show-recover">¿Olvidaste tu contraseña?</a></p>
+                </div>
+            </form>
+
+            <!-- Formulario de Registro -->
+            <form id="form-register" class="auth-form" style="display: none;">
+                <div class="form-group">
+                    <label for="register-username">Nuevo Usuario</label>
+                    <input type="text" id="register-username" class="form-input" placeholder="Elige un usuario" required />
+                </div>
+                <div class="form-group">
+                    <label for="register-password">Contraseña</label>
+                    <input type="password" id="register-password" class="form-input" placeholder="Crea una contraseña" required />
+                </div>
+                <div class="form-group">
+                    <label for="register-password-confirm">Confirmar Contraseña</label>
+                    <input type="password" id="register-password-confirm" class="form-input" placeholder="Repite la contraseña" required />
+                </div>
+                <div id="register-error-msg" class="auth-error-msg"></div>
+                <div id="register-success-msg" class="auth-success-msg"></div>
+                <button type="submit" class="btn btn-success btn-block">Crear Cuenta y Registrarse</button>
+                <p class="auth-toggle-text">¿Ya tienes cuenta? <a href="#" id="link-show-login">Inicia sesión</a></p>
+            </form>
+
+            <!-- Formulario de Recuperación de Contraseña -->
+            <form id="form-recover" class="auth-form" style="display: none;">
+                <div class="form-group">
+                    <label for="recover-username">Usuario</label>
+                    <input type="text" id="recover-username" class="form-input" placeholder="Ingresa tu nombre de usuario" required />
+                </div>
+                <div class="form-group">
+                    <label for="recover-password">Nueva Contraseña</label>
+                    <input type="password" id="recover-password" class="form-input" placeholder="Ingresa tu nueva contraseña" required />
+                </div>
+                <div class="form-group">
+                    <label for="recover-password-confirm">Confirmar Nueva Contraseña</label>
+                    <input type="password" id="recover-password-confirm" class="form-input" placeholder="Repite la nueva contraseña" required />
+                </div>
+                <div id="recover-error-msg" class="auth-error-msg"></div>
+                <div id="recover-success-msg" class="auth-success-msg"></div>
+                <button type="submit" class="btn btn-primary btn-block">Restablecer Contraseña</button>
+                <p class="auth-toggle-text">¿Recordaste tu clave? <a href="#" id="link-recover-show-login">Inicia sesión</a></p>
+            </form>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
+
