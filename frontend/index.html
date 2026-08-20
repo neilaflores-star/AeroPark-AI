@@ -166,6 +166,7 @@
                 <h2>Memoria Persistente & Perfil de Usuario <span class="help-icon" data-tooltip="Memoria: Registra memoria de trabajo, eventos episódicos y reglas del negocio.">❓</span></h2>
                 <div class="memory-tabs">
                     <button class="tab-btn active" data-tab="profile">👤 Perfil de Usuario</button>
+                    <button class="tab-btn" data-tab="reservations">🎫 Mis Reservas</button>
                     <button class="tab-btn" data-tab="working">Memoria de Trabajo (JSON Vivo)</button>
                     <button class="tab-btn" data-tab="episodic">Memoria Episódica (Historial SQLite)</button>
                     <button class="tab-btn" data-tab="semantic">Memoria Semántica (Grafo & Reglas)</button>
@@ -177,6 +178,13 @@
                     <!-- Inyectado dinámicamente por JS -->
                 </div>
             </div>
+
+            <div class="tab-content" id="tab-reservations">
+                <div id="reservations-list">
+                    <!-- Inyectado dinámicamente por JS -->
+                </div>
+            </div>
+
 
             <div class="tab-content" id="tab-working">
                 <pre><code id="json-working-memory"><!-- JSON Vivo --></code></pre>

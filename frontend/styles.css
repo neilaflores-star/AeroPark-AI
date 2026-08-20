@@ -601,7 +601,7 @@ body {
 .memory-viewer {
     display: flex;
     flex-direction: column;
-    overflow: hidden;
+    overflow: visible;
 }
 
 .memory-header {
@@ -646,7 +646,9 @@ body {
     border-radius: 6px;
     font-size: 12px;
     font-weight: 400;
-    white-space: nowrap;
+    white-space: normal;
+    width: max-content;
+    max-width: min(220px, 80vw);
     border: 1px solid rgba(255, 255, 255, 0.15);
     box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
     opacity: 0;
@@ -660,6 +662,7 @@ body {
     opacity: 1;
     visibility: visible;
 }
+
 
 
 .memory-tabs {

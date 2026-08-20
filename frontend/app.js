@@ -174,7 +174,70 @@ async function renderUserProfile(username) {
     }
 }
 
+async function fetchAndRenderUserReservations(username) {
+    const container = document.getElementById("reservations-list");
+    if (!container || !username) return;
+
+    try {
+        const res = await fetch(`${API_BASE}/reservations/${username}`);
+        if (!res.ok) {
+            container.innerHTML = `<div style="text-align: center; color: var(--color-danger); padding: 20px;">No se pudieron cargar tus reservas.</div>`;
+            return;
+        }
+        const data = await res.json();
+        const reservations = data.reservations || [];
+
+        if (reservations.length === 0) {
+            container.innerHTML = `<div style="text-align: center; color: var(--color-text-secondary); padding: 20px; background: rgba(255,255,255,0.02); border-radius: 8px; border: 1px dashed var(--border-color);">
+                No tenés reservas activas registradas.
+            </div>`;
+            return;
+        }
+
+        container.innerHTML = reservations.map(r => `
+            <div class="reservation-item-card" style="background: rgba(255,255,255,0.03); border: 1px solid var(--border-color); border-radius: 8px; padding: 14px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                <div class="res-info" style="font-size: 13px;">
+                    <span class="badge active" style="margin-right: 8px;">🚗 Patente: ${r.plate}</span>
+                    <span class="badge badge-tiempo" style="margin-right: 8px;">Sector: ${r.sector ? r.sector.toUpperCase() : 'N/A'} (${r.assigned_slot || 'Sin Slot'})</span>
+                    <p style="margin: 6px 0 0 0; color: var(--color-text-secondary);">
+                        <strong>Entrada:</strong> ${r.entry_time} hs | <strong>Salida Programada:</strong> ${r.scheduled_exit} hs
+                    </p>
+                </div>
+                <button class="btn btn-danger btn-sm" onclick="cancelUserReservation('${r.assigned_slot}', '${username}')">Cancelar</button>
+            </div>
+        `).join("");
+    } catch (err) {
+        console.error("Error al obtener reservas del usuario:", err);
+        container.innerHTML = `<div style="text-align: center; color: var(--color-danger); padding: 20px;">No se pudo conectar con el servidor.</div>`;
+    }
+}
+
+async function cancelUserReservation(slotId, username) {
+    if (!slotId || !username) return;
+    if (confirm(`¿Estás seguro de que querés cancelar la reserva en la cochera ${slotId}?`)) {
+        try {
+            const res = await fetch(`${API_BASE}/reservations/cancel`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ slot_id: slotId, username: username })
+            });
+            const data = await res.json();
+            if (res.ok) {
+                await fetchAndRenderUserReservations(username);
+                await fetchStatus();
+            } else {
+                alert(data.detail || "Error al cancelar la reserva.");
+            }
+        } catch (err) {
+            console.error("Error al cancelar reserva:", err);
+            alert("Error de conexión al cancelar reserva.");
+        }
+    }
+}
+window.cancelUserReservation = cancelUserReservation;
+
 function setupEventListeners() {
+
     // 1. Selector de Clima
     const weatherButtons = document.querySelectorAll(".btn-weather");
     weatherButtons.forEach(button => {
@@ -285,7 +348,11 @@ function setupEventListeners() {
             if (tabId === "profile") {
                 const user = localStorage.getItem("aeropark_user");
                 if (user) await renderUserProfile(user);
+            } else if (tabId === "reservations") {
+                const user = localStorage.getItem("aeropark_user");
+                if (user) await fetchAndRenderUserReservations(user);
             }
+
         });
     });
 
