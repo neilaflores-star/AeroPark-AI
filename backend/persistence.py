@@ -2,7 +2,9 @@ import os
 import json
 import sqlite3
 import hashlib
+import bcrypt
 from datetime import datetime
+
 
 # Rutas de persistencia
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -296,8 +298,8 @@ def get_tariff_history(sector=None, limit=20):
 # --- Funciones de Usuarios (Autenticación) ---
 
 def hash_password(password):
-    """Devuelve el hash SHA256 de una contraseña."""
-    return hashlib.sha256(password.encode("utf-8")).hexdigest()
+    """Devuelve el hash bcrypt de una contraseña."""
+    return bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
 
 def create_user(username, password):
     """Crea un usuario en la base de datos con contraseña hasheada."""
@@ -324,41 +326,56 @@ def create_user(username, password):
         return False, f"Error al registrar usuario: {str(e)}"
 
 def verify_user(username, password):
-    """Verifica si las credenciales son válidas."""
+    """Verifica si las credenciales son válidas usando bcrypt.checkpw."""
     username_clean = username.strip().lower()
     if not username_clean or not password:
         return False
         
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
-    pwd_hash = hash_password(password)
     cursor.execute(
-        "SELECT id FROM users WHERE username = ? AND password_hash = ?",
-        (username_clean, pwd_hash)
+        "SELECT password_hash FROM users WHERE username = ?",
+        (username_clean,)
     )
     row = cursor.fetchone()
     conn.close()
-    return row is not None
+    if not row:
+        return False
+    try:
+        return bcrypt.checkpw(password.encode("utf-8"), row[0].encode("utf-8"))
+    except Exception:
+        return False
 
-def reset_user_password(username, new_password):
-    """Actualiza la contraseña de un usuario existente."""
+def reset_user_password(username, current_password, new_password):
+    """Actualiza la contraseña de un usuario existente validando su contraseña actual."""
     username_clean = username.strip().lower()
-    if not username_clean or not new_password:
-        return False, "Usuario o contraseña vacíos."
+    if not username_clean or not current_password or not new_password:
+        return False, "Todos los campos son obligatorios.", 400
     
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
-    cursor.execute("SELECT id FROM users WHERE username = ?", (username_clean,))
+    cursor.execute("SELECT password_hash FROM users WHERE username = ?", (username_clean,))
     row = cursor.fetchone()
     if not row:
         conn.close()
-        return False, "El nombre de usuario no existe."
+        return False, "El nombre de usuario no existe.", 404
         
-    pwd_hash = hash_password(new_password)
-    cursor.execute("UPDATE users SET password_hash = ? WHERE username = ?", (pwd_hash, username_clean))
+    stored_hash = row[0]
+    try:
+        is_valid = bcrypt.checkpw(current_password.encode("utf-8"), stored_hash.encode("utf-8"))
+    except Exception:
+        is_valid = False
+        
+    if not is_valid:
+        conn.close()
+        return False, "La contraseña actual es incorrecta.", 401
+        
+    new_pwd_hash = hash_password(new_password)
+    cursor.execute("UPDATE users SET password_hash = ? WHERE username = ?", (new_pwd_hash, username_clean))
     conn.commit()
     conn.close()
-    return True, "Contraseña restablecida exitosamente."
+    return True, "Contraseña restablecida exitosamente.", 200
+
 
 def get_user_profile_data(username):
     """Obtiene los datos de perfil y reservas asociadas de un usuario."""

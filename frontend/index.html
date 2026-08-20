@@ -52,7 +52,7 @@
             <section class="panel glass">
                 <div class="panel-header">
                     <div class="icon">✈️</div>
-                    <h2>Flight Agent <span>(Vuelos y Clima)</span></h2>
+                    <h2>Flight Agent <span>(Vuelos y Clima)</span> <span class="help-icon" data-tooltip="Flight Agent: Monitorea vuelos y detecta alertas meteorológicas en tiempo real.">❓</span></h2>
                 </div>
                 
                 <div class="panel-body">
@@ -93,7 +93,7 @@
             <section class="panel glass">
                 <div class="panel-header">
                     <div class="icon">🚗</div>
-                    <h2>Space & Pricing Agents <span>(Plazas y Tarifas)</span></h2>
+                    <h2>Space & Pricing Agents <span>(Plazas y Tarifas)</span> <span class="help-icon" data-tooltip="Space & Pricing Agents: Gestiona ocupación de plazas y ajusta tarifas dinámicamente.">❓</span></h2>
                 </div>
                 
                 <div class="panel-body">
@@ -119,7 +119,7 @@
             <section class="panel glass">
                 <div class="panel-header">
                     <div class="icon">💬</div>
-                    <h2>UX Agent <span>(WhatsApp Pasajeros)</span></h2>
+                    <h2>UX Agent <span>(WhatsApp Pasajeros)</span> <span class="help-icon" data-tooltip="UX Agent: Asiste a pasajeros por WhatsApp con extensiones y notificaciones.">❓</span></h2>
                 </div>
                 
                 <div class="panel-body mobile-wrapper">
@@ -163,7 +163,7 @@
         <footer class="memory-viewer glass">
             <div class="memory-header">
                 <div class="icon">🧠</div>
-                <h2>Memoria Persistente & Perfil de Usuario</h2>
+                <h2>Memoria Persistente & Perfil de Usuario <span class="help-icon" data-tooltip="Memoria: Registra memoria de trabajo, eventos episódicos y reglas del negocio.">❓</span></h2>
                 <div class="memory-tabs">
                     <button class="tab-btn active" data-tab="profile">👤 Perfil de Usuario</button>
                     <button class="tab-btn" data-tab="working">Memoria de Trabajo (JSON Vivo)</button>
@@ -368,6 +368,10 @@
                     <input type="text" id="recover-username" class="form-input" placeholder="Ingresa tu nombre de usuario" required />
                 </div>
                 <div class="form-group">
+                    <label for="recover-current-password">Contraseña Actual</label>
+                    <input type="password" id="recover-current-password" class="form-input" placeholder="Ingresa tu contraseña actual" required />
+                </div>
+                <div class="form-group">
                     <label for="recover-password">Nueva Contraseña</label>
                     <input type="password" id="recover-password" class="form-input" placeholder="Ingresa tu nueva contraseña" required />
                 </div>
@@ -382,6 +386,7 @@
             </form>
         </div>
     </div>
+
 
     <script src="app.js"></script>
 </body>

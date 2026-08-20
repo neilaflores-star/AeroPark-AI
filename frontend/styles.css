@@ -618,6 +618,50 @@ body {
     font-weight: 600;
 }
 
+/* Tooltips de Ayuda CSS Puro */
+.help-icon {
+    position: relative;
+    cursor: help;
+    font-size: 13px;
+    margin-left: 6px;
+    opacity: 0.75;
+    transition: opacity 0.2s ease;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.help-icon:hover {
+    opacity: 1;
+}
+
+.help-icon::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: 130%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #0f172a;
+    color: #f8fafc;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 400;
+    white-space: nowrap;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 0.2s ease, visibility 0.2s ease;
+    z-index: 1000;
+}
+
+.help-icon:hover::after {
+    opacity: 1;
+    visibility: visible;
+}
+
+
 .memory-tabs {
     display: flex;
     gap: 8px;

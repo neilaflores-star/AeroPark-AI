@@ -8,10 +8,13 @@ import backend.agents as ag
 
 app = FastAPI(title="AeroPark AI - API de Orquestación Agéntica", redirect_slashes=False)
 
-# Habilitar CORS para permitir que el frontend se conecte desde cualquier origen (ej. Vercel, file:// o localhost)
+# Habilitar CORS sólo para orígenes permitidos
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=[
+        "https://aero-park-ai.vercel.app",
+        "http://localhost:5500"
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -46,6 +49,9 @@ class ReservationRequest(BaseModel):
     scheduled_exit: str
     slot_id: str
 
+class ReservationCancel(BaseModel):
+    slot_id: str
+
 class WeatherSim(BaseModel):
     weather: str
 
@@ -66,6 +72,7 @@ class UserAuth(BaseModel):
 
 class PasswordReset(BaseModel):
     username: str
+    current_password: str
     new_password: str
 
 # --- Endpoints de la API ---
@@ -95,12 +102,47 @@ def login_user(payload: UserAuth):
 @app.put("/api/auth/reset-password")
 @app.put("/api/auth/reset-password/")
 def reset_password(payload: PasswordReset):
-    """Restablece la contraseña de un usuario."""
-    success, msg = db.reset_user_password(payload.username, payload.new_password)
+    """Restablece la contraseña de un usuario validando la clave actual."""
+    success, msg, status_code = db.reset_user_password(payload.username, payload.current_password, payload.new_password)
     if not success:
-        raise HTTPException(status_code=400, detail=msg)
+        raise HTTPException(status_code=status_code, detail=msg)
     db.log_incident("USUARIO_PASS_RESET", f"El usuario '{payload.username.lower()}' restableció su contraseña.")
     return {"status": "SUCCESS", "message": msg}
+
+@app.post("/api/reserve/cancel")
+@app.post("/api/reserve/cancel/")
+def cancel_reservation(payload: ReservationCancel):
+    """Cancela una reserva confirmada en una cochera."""
+    slot_id = payload.slot_id.strip()
+    target_slot = None
+    for s in state.get("slots", []):
+        if s["slot_id"] == slot_id:
+            target_slot = s
+            break
+            
+    if not target_slot or target_slot.get("status") != "reserved":
+        raise HTTPException(status_code=400, detail="La cochera no está reservada o no existe.")
+        
+    assigned_plate = target_slot.get("assigned_plate") or "Sin patente"
+    sector = target_slot.get("sector")
+    
+    # Cambiar estado y vaciar patente
+    target_slot["status"] = "available"
+    target_slot["assigned_plate"] = None
+    
+    # Ajustar ocupación de sector
+    if sector in state.get("parking_slots", {}):
+        if state["parking_slots"][sector]["occupied"] > 0:
+            state["parking_slots"][sector]["occupied"] -= 1
+            
+    # Eliminar de lista simulada si estaba
+    if "simulated_cars" in state:
+        state["simulated_cars"] = [car for car in state["simulated_cars"] if car.get("assigned_slot") != slot_id]
+        
+    db.save_working_memory(state)
+    db.log_incident("RESERVA_CANCELADA", f"Reserva en cochera {slot_id} (patente: {assigned_plate}) cancelada.")
+    return {"status": "SUCCESS", "message": f"Reserva en cochera {slot_id} cancelada exitosamente."}
+
 
 
 @app.get("/api/user/profile/{username}")

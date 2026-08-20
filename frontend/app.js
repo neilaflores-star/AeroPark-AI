@@ -135,9 +135,12 @@ async function renderUserProfile(username) {
         } else {
             reservationsHtml = profile.active_reservations.map(res => `
                 <div class="profile-res-card" style="background: rgba(255,255,255,0.03); border: 1px solid var(--border-color); border-radius: 8px; padding: 14px; margin-bottom: 10px;">
-                    <div class="profile-res-header" style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                    <div class="profile-res-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
                         <span class="badge active" style="font-weight: 600;">🚗 Patente: ${res.plate}</span>
-                        <span class="badge badge-tiempo">Sector ${res.sector.toUpperCase()} (${res.assigned_slot})</span>
+                        <div style="display: flex; gap: 8px; align-items: center;">
+                            <span class="badge badge-tiempo">Sector ${res.sector.toUpperCase()} (${res.assigned_slot})</span>
+                            <button class="btn btn-danger btn-sm" onclick="cancelReservation('${res.assigned_slot}')" style="padding: 3px 8px; font-size: 11px;">Cancelar reserva</button>
+                        </div>
                     </div>
                     <div class="profile-res-details" style="font-size: 13px; color: var(--color-text-secondary); display: grid; grid-template-columns: 1fr 1fr; gap: 6px;">
                         <p><strong>Pasajero:</strong> ${res.owner_name}</p>
@@ -450,6 +453,7 @@ function setupEventListeners() {
         formRecover.addEventListener("submit", async (e) => {
             e.preventDefault();
             const username = document.getElementById("recover-username").value.trim();
+            const currentPassword = document.getElementById("recover-current-password").value;
             const newPassword = document.getElementById("recover-password").value;
             const confirmPassword = document.getElementById("recover-password-confirm").value;
             const errorMsg = document.getElementById("recover-error-msg");
@@ -460,7 +464,7 @@ function setupEventListeners() {
 
             if (newPassword !== confirmPassword) {
                 if (errorMsg) {
-                    errorMsg.textContent = "Las contraseñas no coinciden.";
+                    errorMsg.textContent = "Las nuevas contraseñas no coinciden.";
                     errorMsg.style.display = "block";
                 }
                 return;
@@ -470,8 +474,9 @@ function setupEventListeners() {
                 const res = await fetch(`${API_BASE}/auth/reset-password`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ username, new_password: newPassword })
+                    body: JSON.stringify({ username, current_password: currentPassword, new_password: newPassword })
                 });
+
                 const data = await res.json();
 
                 if (res.ok) {
