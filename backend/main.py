@@ -6,7 +6,7 @@ from pydantic import BaseModel
 import backend.persistence as db
 import backend.agents as ag
 
-app = FastAPI(title="AeroPark AI - API de Orquestación Agéntica")
+app = FastAPI(title="AeroPark AI - API de Orquestación Agéntica", redirect_slashes=False)
 
 # Habilitar CORS para permitir que el frontend se conecte desde cualquier origen (ej. Vercel, file:// o localhost)
 app.add_middleware(
@@ -18,6 +18,7 @@ app.add_middleware(
 )
 
 @app.get("/")
+@app.get("/api")
 def read_root():
     """Endpoint de comprobación de salud para Render.com."""
     return {"status": "SUCCESS", "message": "AeroPark AI Backend en vivo", "version": "1.0.0"}
@@ -70,6 +71,7 @@ class PasswordReset(BaseModel):
 # --- Endpoints de la API ---
 
 @app.post("/api/auth/register")
+@app.post("/api/auth/register/")
 def register_user(payload: UserAuth):
     """Registra un nuevo usuario en el sistema."""
     success, msg = db.create_user(payload.username, payload.password)
@@ -79,6 +81,7 @@ def register_user(payload: UserAuth):
     return {"status": "SUCCESS", "message": msg}
 
 @app.post("/api/auth/login")
+@app.post("/api/auth/login/")
 def login_user(payload: UserAuth):
     """Verifica credenciales de usuario."""
     success = db.verify_user(payload.username, payload.password)
@@ -88,6 +91,9 @@ def login_user(payload: UserAuth):
     return {"status": "SUCCESS", "username": payload.username.lower()}
 
 @app.post("/api/auth/reset-password")
+@app.post("/api/auth/reset-password/")
+@app.put("/api/auth/reset-password")
+@app.put("/api/auth/reset-password/")
 def reset_password(payload: PasswordReset):
     """Restablece la contraseña de un usuario."""
     success, msg = db.reset_user_password(payload.username, payload.new_password)
@@ -95,6 +101,7 @@ def reset_password(payload: PasswordReset):
         raise HTTPException(status_code=400, detail=msg)
     db.log_incident("USUARIO_PASS_RESET", f"El usuario '{payload.username.lower()}' restableció su contraseña.")
     return {"status": "SUCCESS", "message": msg}
+
 
 @app.get("/api/user/profile/{username}")
 def get_user_profile(username: str):
