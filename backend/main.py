@@ -52,7 +52,12 @@ class ReservationRequest(BaseModel):
 class ReservationCancel(BaseModel):
     slot_id: str
 
+class UserReservationCancel(BaseModel):
+    slot_id: str
+    username: str
+
 class WeatherSim(BaseModel):
+
     weather: str
 
 class FlightStatusSim(BaseModel):
@@ -143,9 +148,66 @@ def cancel_reservation(payload: ReservationCancel):
     db.log_incident("RESERVA_CANCELADA", f"Reserva en cochera {slot_id} (patente: {assigned_plate}) cancelada.")
     return {"status": "SUCCESS", "message": f"Reserva en cochera {slot_id} cancelada exitosamente."}
 
+@app.get("/api/reservations/{username}")
+@app.get("/api/reservations/{username}/")
+def get_user_reservations(username: str):
+    """Devuelve todas las reservas activas del usuario especificado."""
+    username_clean = username.strip().lower()
+    sim_cars = state.get("simulated_cars", [])
+    user_reservations = [
+        car for car in sim_cars
+        if username_clean in car.get("owner_name", "").lower() or car.get("owner_name", "").lower() == username_clean
+    ]
+    return {"status": "SUCCESS", "reservations": user_reservations}
 
+@app.post("/api/reservations/cancel")
+@app.post("/api/reservations/cancel/")
+def cancel_user_reservation(payload: UserReservationCancel):
+    """Valida que la reserva pertenezca al usuario especificado antes de cancelarla."""
+    username_clean = payload.username.strip().lower()
+    slot_id = payload.slot_id.strip()
+    
+    sim_cars = state.get("simulated_cars", [])
+    target_car = None
+    for car in sim_cars:
+        if car.get("assigned_slot") == slot_id:
+            target_car = car
+            break
+            
+    if not target_car:
+        raise HTTPException(status_code=404, detail="Reserva no encontrada.")
+        
+    car_owner = target_car.get("owner_name", "").strip().lower()
+    if username_clean not in car_owner and car_owner != username_clean:
+        raise HTTPException(status_code=403, detail="La reserva no pertenece a este usuario.")
+        
+    # Liberar cochera volviendo status a 'available'
+    target_slot = None
+    for s in state.get("slots", []):
+        if s["slot_id"] == slot_id:
+            target_slot = s
+            break
+            
+    if target_slot:
+        target_slot["status"] = "available"
+        target_slot["assigned_plate"] = None
+        
+    # Ajustar ocupación de sector
+    sector = target_car.get("sector")
+    if sector and sector in state.get("parking_slots", {}):
+        if state["parking_slots"][sector]["occupied"] > 0:
+            state["parking_slots"][sector]["occupied"] -= 1
+            
+    # Eliminar de simulated_cars
+    state["simulated_cars"] = [c for c in sim_cars if c.get("assigned_slot") != slot_id]
+    
+    plate = target_car.get("plate") or "Sin patente"
+    db.save_working_memory(state)
+    db.log_incident("RESERVA_CANCELADA", f"El usuario '{payload.username}' canceló la reserva de la cochera {slot_id} (patente: {plate}).")
+    return {"status": "SUCCESS", "message": f"Reserva en cochera {slot_id} cancelada exitosamente."}
 
 @app.get("/api/user/profile/{username}")
+
 def get_user_profile(username: str):
     """Retorna información del perfil y reservas vigentes del usuario."""
     profile = db.get_user_profile_data(username)
