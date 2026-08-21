@@ -117,7 +117,7 @@ body {
     display: flex;
     flex-direction: column;
     min-height: 580px;
-    overflow: hidden;
+    overflow: visible;
 }
 
 .panel-header {
