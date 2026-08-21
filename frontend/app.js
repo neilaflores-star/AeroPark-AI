@@ -1,4 +1,4 @@
-const DEFAULT_RENDER_BACKEND = "https://tu-backend-aeropark-dashboard.onrender.com";
+const DEFAULT_RENDER_BACKEND = "https://aeropark-ai.onrender.com";
 
 function getApiBaseUrl() {
     const saved = localStorage.getItem("aeropark_backend_url");
