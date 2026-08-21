@@ -737,6 +737,7 @@ function setupEventListeners() {
             
             // Si el sector es descubierto (larga) y hay alerta de granizo o clima de lluvia/niebla activo
             const currentWeather = document.getElementById("current-weather-badge").textContent;
+            const loggedUsername = localStorage.getItem("aeropark_user") || "";
             
             if (sector === "larga" && (currentWeather === "LLUVIA" || currentWeather === "NIEBLA")) {
                 openUpgradeModal({
@@ -747,7 +748,8 @@ function setupEventListeners() {
                     entry_time: entry,
                     scheduled_exit: exit,
                     sector,
-                    slot_id: selectedSlotId
+                    slot_id: selectedSlotId,
+                    username: loggedUsername
                 });
                 return;
             }
@@ -760,7 +762,8 @@ function setupEventListeners() {
                 entry_time: entry,
                 scheduled_exit: exit,
                 sector,
-                slot_id: selectedSlotId
+                slot_id: selectedSlotId,
+                username: loggedUsername
             });
         });
     }
