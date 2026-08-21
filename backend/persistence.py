@@ -383,8 +383,10 @@ def get_user_profile_data(username):
     wm = load_working_memory()
     sim_cars = wm.get("simulated_cars", [])
     
-    # Buscar vehículos / reservas vinculados al usuario
-    user_cars = [car for car in sim_cars if username_clean in car.get("owner_name", "").lower() or car.get("owner_name", "").lower() == username_clean]
+    # Buscar vehículos / reservas vinculados al usuario por su username de login
+    # (antes filtraba por owner_name, que es el nombre del pasajero tipeado
+    # en el formulario y casi nunca coincide con el username de la cuenta)
+    user_cars = [car for car in sim_cars if car.get("username", "").strip().lower() == username_clean]
     
     return {
         "username": username_clean,
