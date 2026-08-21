@@ -48,7 +48,7 @@ class ReservationRequest(BaseModel):
     entry_time: str
     scheduled_exit: str
     slot_id: str
-    username: str = ""
+    username: str
 
 class ReservationCancel(BaseModel):
     slot_id: str
