@@ -117,6 +117,8 @@ def reset_password(payload: PasswordReset):
 
 @app.post("/api/reserve/cancel")
 @app.post("/api/reserve/cancel/")
+@app.post("/api/reservations/cancel")
+@app.post("/api/reservations/cancel/")
 def cancel_reservation(payload: ReservationCancel):
     """Cancela una reserva confirmada en una cochera."""
     slot_id = payload.slot_id.strip()
