@@ -393,7 +393,7 @@ function setupEventListeners() {
             const data = await res.json();
             
             if (res.ok) {
-                const role = (data.username.toLowerCase() === "nachin") ? "Admin" : "Usuario";
+                const role = (data.username.toLowerCase() === "admin") ? "Admin" : "Usuario";
                 localStorage.setItem("aeropark_user", data.username);
                 localStorage.setItem("aeropark_user_role", role);
                 checkSession();
@@ -1182,7 +1182,7 @@ function evaluateUserRole() {
     const user = localStorage.getItem("aeropark_user");
     if (!user) return;
     
-    const role = localStorage.getItem("aeropark_user_role") || (user.toLowerCase() === "nachin" ? "Admin" : "Usuario");
+    const role = localStorage.getItem("aeropark_user_role") || (user.toLowerCase() === "admin" ? "Admin" : "Usuario");
     
     const tabWorkingBtn = document.querySelector('.tab-btn[data-tab="working"]');
     const tabEpisodicBtn = document.querySelector('.tab-btn[data-tab="episodic"]');
