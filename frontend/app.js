@@ -92,6 +92,7 @@ function checkSession() {
             pollingInterval = setInterval(fetchStatus, 2500);
         }
         renderUserProfile(user);
+        evaluateUserRole();
     } else {
         overlay.classList.remove("hidden");
         profile.style.display = "none";
@@ -102,6 +103,7 @@ function checkSession() {
             clearInterval(pollingInterval);
             pollingInterval = null;
         }
+        resetTabVisibility();
     }
 }
 
@@ -391,7 +393,9 @@ function setupEventListeners() {
             const data = await res.json();
             
             if (res.ok) {
+                const role = (data.username.toLowerCase() === "nachin") ? "Admin" : "Usuario";
                 localStorage.setItem("aeropark_user", data.username);
+                localStorage.setItem("aeropark_user_role", role);
                 checkSession();
             } else {
                 if (errorMsg) {
@@ -549,6 +553,7 @@ function setupEventListeners() {
     if (btnLogout) {
         btnLogout.addEventListener("click", () => {
             localStorage.removeItem("aeropark_user");
+            localStorage.removeItem("aeropark_user_role");
             checkSession();
             // Limpiar visor de memoria
             document.getElementById("json-working-memory").textContent = "";
@@ -1170,5 +1175,68 @@ async function sendReservation(bookingData) {
         }
     } catch (err) {
         console.error("Error al procesar reserva:", err);
+    }
+}
+
+function evaluateUserRole() {
+    const user = localStorage.getItem("aeropark_user");
+    if (!user) return;
+    
+    const role = localStorage.getItem("aeropark_user_role") || (user.toLowerCase() === "nachin" ? "Admin" : "Usuario");
+    
+    const tabWorkingBtn = document.querySelector('.tab-btn[data-tab="working"]');
+    const tabEpisodicBtn = document.querySelector('.tab-btn[data-tab="episodic"]');
+    const tabSemanticBtn = document.querySelector('.tab-btn[data-tab="semantic"]');
+    
+    const tabWorkingDiv = document.getElementById("tab-working");
+    const tabEpisodicDiv = document.getElementById("tab-episodic");
+    const tabSemanticDiv = document.getElementById("tab-semantic");
+    
+    if (role === "Admin") {
+        if (tabWorkingBtn) tabWorkingBtn.style.display = "";
+        if (tabEpisodicBtn) tabEpisodicBtn.style.display = "";
+        if (tabSemanticBtn) tabSemanticBtn.style.display = "";
+    } else {
+        if (tabWorkingBtn) tabWorkingBtn.style.display = "none";
+        if (tabEpisodicBtn) tabEpisodicBtn.style.display = "none";
+        if (tabSemanticBtn) tabSemanticBtn.style.display = "none";
+        
+        if (tabWorkingDiv) tabWorkingDiv.style.display = "none";
+        if (tabEpisodicDiv) tabEpisodicDiv.style.display = "none";
+        if (tabSemanticDiv) tabSemanticDiv.style.display = "none";
+        
+        // Force switch to profile tab if current active tab is one of the hidden ones
+        const activeTabBtn = document.querySelector('.tab-btn.active');
+        if (activeTabBtn) {
+            const activeTab = activeTabBtn.getAttribute('data-tab');
+            if (activeTab === "working" || activeTab === "episodic" || activeTab === "semantic") {
+                switchTab("profile");
+            }
+        }
+    }
+}
+
+function resetTabVisibility() {
+    const tabWorkingBtn = document.querySelector('.tab-btn[data-tab="working"]');
+    const tabEpisodicBtn = document.querySelector('.tab-btn[data-tab="episodic"]');
+    const tabSemanticBtn = document.querySelector('.tab-btn[data-tab="semantic"]');
+    
+    const tabWorkingDiv = document.getElementById("tab-working");
+    const tabEpisodicDiv = document.getElementById("tab-episodic");
+    const tabSemanticDiv = document.getElementById("tab-semantic");
+    
+    if (tabWorkingBtn) tabWorkingBtn.style.display = "";
+    if (tabEpisodicBtn) tabEpisodicBtn.style.display = "";
+    if (tabSemanticBtn) tabSemanticBtn.style.display = "";
+    
+    if (tabWorkingDiv) tabWorkingDiv.style.display = "";
+    if (tabEpisodicDiv) tabEpisodicDiv.style.display = "";
+    if (tabSemanticDiv) tabSemanticDiv.style.display = "";
+}
+
+function switchTab(tabId) {
+    const tabButton = document.querySelector(`.tab-btn[data-tab="${tabId}"]`);
+    if (tabButton) {
+        tabButton.click();
     }
 }
