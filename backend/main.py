@@ -48,6 +48,7 @@ class ReservationRequest(BaseModel):
     entry_time: str
     scheduled_exit: str
     slot_id: str
+    username: str = ""
 
 class ReservationCancel(BaseModel):
     slot_id: str
@@ -156,7 +157,7 @@ def get_user_reservations(username: str):
     sim_cars = state.get("simulated_cars", [])
     user_reservations = [
         car for car in sim_cars
-        if username_clean in car.get("owner_name", "").lower() or car.get("owner_name", "").lower() == username_clean
+        if car.get("username", "").strip().lower() == username_clean
     ]
     return {"status": "SUCCESS", "reservations": user_reservations}
 
@@ -177,8 +178,8 @@ def cancel_user_reservation(payload: UserReservationCancel):
     if not target_car:
         raise HTTPException(status_code=404, detail="Reserva no encontrada.")
         
-    car_owner = target_car.get("owner_name", "").strip().lower()
-    if username_clean not in car_owner and car_owner != username_clean:
+    car_owner_username = target_car.get("username", "").strip().lower()
+    if not car_owner_username or car_owner_username != username_clean:
         raise HTTPException(status_code=403, detail="La reserva no pertenece a este usuario.")
         
     # Liberar cochera volviendo status a 'available'
@@ -450,7 +451,8 @@ def make_reservation(payload: ReservationRequest):
         "scheduled_exit": payload.scheduled_exit,
         "status": "ESTACIONADO",
         "assigned_slot": payload.slot_id,
-        "notified": False
+        "notified": False,
+        "username": payload.username.strip().lower() if payload.username else ""
     }
     state["simulated_cars"].append(new_car)
     
