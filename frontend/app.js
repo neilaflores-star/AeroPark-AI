@@ -1202,7 +1202,10 @@ async function sendReservation(bookingData) {
             selectedSlotId = null;
             await fetchStatus();
             const user = localStorage.getItem("aeropark_user");
-            if (user) await renderUserProfile(user);
+            if (user) {
+                await renderUserProfile(user);
+                await fetchAndRenderUserReservations(user);
+            }
         } else {
             alert(data.detail || "Error al realizar la reserva.");
         }
