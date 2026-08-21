@@ -185,6 +185,7 @@ async function cancelUserReservation(slotId, username) {
             });
             const data = await res.json();
             if (res.ok) {
+                alert(data.message || `Reserva en la cochera ${slotId} cancelada exitosamente.`);
                 await renderUserProfile(username);
                 await fetchStatus();
             } else {
@@ -1171,41 +1172,3 @@ async function sendReservation(bookingData) {
         console.error("Error al procesar reserva:", err);
     }
 }
-
-async function cancelReservation(slotId) {
-    if (!slotId) return;
-    
-    // Si el usuario cancela el diálogo de confirmación, no se ejecuta ningún cambio.
-    if (!confirm(`¿Estás seguro de que querés cancelar la reserva en la cochera ${slotId}?`)) {
-        return;
-    }
-    
-    try {
-        const res = await fetch(`${API_BASE}/reserve/cancel`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ slot_id: slotId })
-        });
-        
-        const data = await res.json();
-        if (res.ok) {
-            // Se muestra confirmación de éxito al usuario
-            alert(data.message || `Reserva en la cochera ${slotId} cancelada exitosamente.`);
-            
-            // La plaza cancelada vuelve a estar disponible en ocupación y en la grilla
-            await fetchStatus();
-            const user = localStorage.getItem("aeropark_user");
-            if (user) {
-                await renderUserProfile(user);
-            }
-        } else {
-            alert(data.detail || "Error al cancelar la reserva.");
-        }
-    } catch (err) {
-        console.error("Error al cancelar reserva:", err);
-        alert("Ocurrió un error de conexión al intentar cancelar la reserva.");
-    }
-}
-
-// Exponer la función globalmente para que pueda llamarse desde el inline onclick
-window.cancelReservation = cancelReservation;
